@@ -18,10 +18,7 @@
 (rule
  (targets libopendal.a dllopendal.so)
  (deps
-  (glob_files_rec   ../../../core/**)
-  (glob_files_rec   ../../../bin/**)
-  (glob_files   ../../../**)
-  (glob_files_rec   ../../../bindings/*.{toml,rs})
+  (source_tree  .)
   )
  (action
   (progn
