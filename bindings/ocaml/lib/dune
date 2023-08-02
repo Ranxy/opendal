@@ -15,4 +15,9 @@
 ; specific language governing permissions and limitations
 ; under the License.
 
-(dirs :standard \ target)
+;(dirs :standard \ target)
+
+(library
+ (name opendal)
+ (public_name opendal)
+ (libraries opendal.inner))

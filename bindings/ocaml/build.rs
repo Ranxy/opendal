@@ -16,5 +16,5 @@
 // under the License.
 
 pub fn main() -> std::io::Result<()> {
-    ocaml_build::Sigs::new("src/opendal.ml").generate()
+    ocaml_build::Sigs::new("src/inner.ml").generate()
 }

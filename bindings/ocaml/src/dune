@@ -16,22 +16,28 @@
 ; under the License.
 
 (rule
- (targets libopendal.a dllopendal.so)
+ (targets libinner.a dllinner.so)
  (deps
-  (source_tree  .)
-  )
+  (source_tree .))
  (action
   (progn
-   (run sh -c "cd %{project_root} && pwd && cargo build -p opendal-ocaml --release")
+   (run
+    sh
+    -c
+    "cd %{project_root} && pwd && cargo build -p opendal-ocaml --release")
    (run sh -c "cd %{project_root} && pwd ")
-   (run sh -c
-     "mv %{project_root}/../../target/release/libopendal_ocaml.so ./dllopendal.so 2> /dev/null || mv %{project_root}/../../target/release/libopendal_ocaml.dylib ./dllopendal.so")
-   (run mv %{project_root}/../../target/release/libopendal_ocaml.a
-     libopendal.a))))
+   (run
+    sh
+    -c
+    "mv %{project_root}/../../target/release/libopendal_ocaml.so ./dllinner.so 2> /dev/null || mv %{project_root}/../../target/release/libopendal_ocaml.dylib ./dllinner.so")
+   (run
+    mv
+    %{project_root}/../../target/release/libopendal_ocaml.a
+    libinner.a))))
 
 (library
- (name opendal)
- (public_name opendal)
- (foreign_archives opendal)
+ (name inner)
+ (public_name opendal.inner)
+ (foreign_archives inner)
  (c_library_flags
   (-lpthread -lc -lm)))
