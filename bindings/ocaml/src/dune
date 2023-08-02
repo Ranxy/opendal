@@ -18,13 +18,18 @@
 (rule
  (targets libopendal.a dllopendal.so)
  (deps
-  (glob_files *.rs))
+  (glob_files_rec   ../../../core/**)
+  (glob_files_rec   ../../../bin/**)
+  (glob_files   ../../../**)
+  (glob_files_rec   ../../../bindings/*.{toml,rs})
+  )
  (action
   (progn
-   (run sh -c "cd %{project_root}/../.. && cargo build --release")
+   (run sh -c "cd %{project_root} && pwd && cargo build -p opendal-ocaml --release")
+   (run sh -c "cd %{project_root} && pwd ")
    (run sh -c
-     "mv %{project_root}/../../../../target/release/libopendal_ocaml.so ./dllopendal.so 2> /dev/null || mv %{project_root}/../../../../target/release/libopendal_ocaml.dylib ./dllopendal.so")
-   (run mv %{project_root}/../../../../target/release/libopendal_ocaml.a
+     "mv %{project_root}/../../target/release/libopendal_ocaml.so ./dllopendal.so 2> /dev/null || mv %{project_root}/../../target/release/libopendal_ocaml.dylib ./dllopendal.so")
+   (run mv %{project_root}/../../target/release/libopendal_ocaml.a
      libopendal.a))))
 
 (library
