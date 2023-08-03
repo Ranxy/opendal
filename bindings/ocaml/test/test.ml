@@ -26,7 +26,7 @@ let test_check_result = function
 
 let new_test_block_operator test_ctxt =
   let cfgs = [ ("root", bracket_tmpdir test_ctxt) ] in
-  test_check_result (Block_operator.new_operator "fs" cfgs)
+  test_check_result (Block_operator.new_operator Scheme.Fs cfgs)
 
 let test_new_block_operator _ = ignore new_test_block_operator
 
@@ -53,7 +53,8 @@ let test_block_write_and_read test_ctxt =
 let test_copy_and_read test_ctxt =
   let bo = new_test_block_operator test_ctxt in
   let data = "helloworld" in
-  ignore (test_check_result (Block_operator.write bo "foo" (Bytes.of_string data)));
+  ignore
+    (test_check_result (Block_operator.write bo "foo" (Bytes.of_string data)));
   ignore (test_check_result (Block_operator.copy bo "foo" "bar"));
   let got_res = test_check_result (Block_operator.read bo "bar") in
   assert_equal data (got_res |> Array.to_seq |> Bytes.of_seq |> Bytes.to_string)
