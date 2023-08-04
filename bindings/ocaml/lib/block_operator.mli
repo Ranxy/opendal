@@ -1,7 +1,7 @@
 val new_operator :
   Scheme.scheme ->
   (string * string) list ->
-  (Inner.blocking_operator, string) result
+  (Basic_blocking.blocking_operator, string) result
 (** [new_operator schema config_map] Create a new block operator from given scheme and config_map.
     
     @param schema The support service
@@ -9,7 +9,7 @@ val new_operator :
     @return The block operator
 *)
 
-val is_exist : Inner.blocking_operator -> string -> (bool, string) result
+val is_exist : Basic_blocking.blocking_operator -> string -> (bool, string) result
 (** [is_exist operator path] Check if this path exists or not.
     
     @param operator The block operator
@@ -17,7 +17,7 @@ val is_exist : Inner.blocking_operator -> string -> (bool, string) result
     @return is exists
 *)
 
-val create_dir : Inner.blocking_operator -> string -> (bool, string) result
+val create_dir : Basic_blocking.blocking_operator -> string -> (bool, string) result
 (** [create_dir operator path] Create a dir at given path.
     
     # Notes
@@ -34,7 +34,7 @@ val create_dir : Inner.blocking_operator -> string -> (bool, string) result
     @param path want to create dir
 *)
 
-val read : Inner.blocking_operator -> string -> (char array, string) result
+val read : Basic_blocking.blocking_operator -> string -> (char array, string) result
 (** [read operator path] Read the whole path into a bytes.
     
     @param operator The block operator
@@ -42,7 +42,7 @@ val read : Inner.blocking_operator -> string -> (char array, string) result
     @return data of path
 *)
 
-val write : Inner.blocking_operator -> string -> bytes -> (unit, string) result
+val write : Basic_blocking.blocking_operator -> string -> bytes -> (unit, string) result
 (** [write operator path data] Write bytes into given path.
     - Write will make sure all bytes has been written, or an error will be returned.
     @param operator The block operator
@@ -50,7 +50,7 @@ val write : Inner.blocking_operator -> string -> bytes -> (unit, string) result
     @param data want to write
 *)
 
-val copy : Inner.blocking_operator -> string -> string -> (unit, string) result
+val copy : Basic_blocking.blocking_operator -> string -> string -> (unit, string) result
 (** [copy operator from to] Copy a file from [from] to [to].
     - [from] and [to] must be a file.
     - [to] will be overwritten if it exists.
@@ -62,7 +62,7 @@ val copy : Inner.blocking_operator -> string -> string -> (unit, string) result
 *)
 
 val rename :
-  Inner.blocking_operator -> string -> string -> (unit, string) result
+  Basic_blocking.blocking_operator -> string -> string -> (unit, string) result
 (** [rename operator from to] Rename a file from [from] to [to].
     - [from] and [to] must be a file.
     - [to] will be overwritten if it exists.
@@ -72,21 +72,21 @@ val rename :
     @param to file path
 *)
 
-val delete : Inner.blocking_operator -> string -> (unit, string) result
+val delete : Basic_blocking.blocking_operator -> string -> (unit, string) result
 (** [delete operator path] Delete given path.
     - Delete not existing error won't return errors.
     @param operator The block operator
     @param path file path
 *)
 
-val remove : Inner.blocking_operator -> string array -> (unit, string) result
+val remove : Basic_blocking.blocking_operator -> string array -> (unit, string) result
 (** [remove operator paths] Remove path array.
     - We don't support batch delete now, will call delete on each object in turn
     @param operator The block operator
     @param paths file path array
 *)
 
-val remove_all : Inner.blocking_operator -> string -> (unit, string) result
+val remove_all : Basic_blocking.blocking_operator -> string -> (unit, string) result
 (** [remove_all operator path] Remove the path and all nested dirs and files recursively.
     - We don't support batch delete now, will call delete on each object in turn
     @param operator The block operator

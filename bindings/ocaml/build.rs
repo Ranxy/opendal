@@ -14,7 +14,10 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
+use std::path::PathBuf;
 
 pub fn main() -> std::io::Result<()> {
-    ocaml_build::Sigs::new("src/inner.ml").generate()
+    let root = PathBuf::from(std::env::var("CARGO_MANIFEST_DIR").unwrap());
+    ocaml_build::Sigs::new("lib/scheme.ml").with_source_dir(root.join("src/scheme")).generate()?;
+    ocaml_build::Sigs::new("lib/basic_blocking.ml").with_source_dir(root.join("src/basic_blocking")).generate()
 }
