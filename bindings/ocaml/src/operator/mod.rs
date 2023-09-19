@@ -23,13 +23,38 @@ use _type::*;
 
 use super::*;
 
+fn add_layers(mut op: od::Operator, layers: Vec<ocaml::Pointer<layers::Layer>>) -> od::Operator {
+    for layer in layers {
+        let l: layers::Layer;
+        unsafe {
+            l = std::ptr::read(layer.as_ptr());
+        }
+        match l {
+            layers::Layer::Retry(retry) => {
+                let v = retry;
+                op = op.layer(v.0)
+            }
+            // layers::Layer::ImmutableIndex(layers::ImmutableIndexLayer(inner)) => {
+            //     op = op.layer(inner)
+            // }
+            // layers::Layer::ConcurrentLimit(layers::ConcurrentLimitLayer(inner)) => {
+            //     op = op.layer(inner)
+            // }
+        }
+    }
+    op
+}
+
 #[ocaml::func]
 #[ocaml::sig("string -> (string * string) list -> (operator, string) Result.t ")]
 pub fn operator(
     scheme_str: String,
     map: BTreeMap<String, String>,
+    layers: Vec<ocaml::Pointer<layers::Layer>>,
 ) -> Result<ocaml::Pointer<Operator>, String> {
     let op = map_res_error(new_operator(scheme_str, map))?;
+
+    let op = add_layers(op, layers);
     Ok(Operator(op.blocking()).into())
 }
 
