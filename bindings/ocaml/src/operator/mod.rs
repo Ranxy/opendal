@@ -23,30 +23,31 @@ use _type::*;
 
 use super::*;
 
-fn add_layers(mut op: od::Operator, layers: Vec<ocaml::Pointer<layers::Layer>>) -> od::Operator {
+fn add_layers(mut op: od::Operator, layers: Vec<ocaml::Pointer< layers::Layer>>) -> od::Operator {
     for layer in layers {
         let l: layers::Layer;
         unsafe {
-            l = std::ptr::read(layer.as_ptr());
+            l = std::ptr::read(layer.as_ptr()); //bug, will panic when gc
         }
         match l {
-            layers::Layer::Retry(retry) => {
-                let v = retry;
-                op = op.layer(v.0)
+            layers::Layer::Retry(layers::RetryLayer(inner)) => op = op.layer(inner),
+            layers::Layer::ImmutableIndex(layers::ImmutableIndexLayer(inner)) => {
+                op = op.layer(inner)
             }
-            // layers::Layer::ImmutableIndex(layers::ImmutableIndexLayer(inner)) => {
-            //     op = op.layer(inner)
-            // }
-            // layers::Layer::ConcurrentLimit(layers::ConcurrentLimitLayer(inner)) => {
-            //     op = op.layer(inner)
-            // }
+            layers::Layer::ConcurrentLimit(layers::ConcurrentLimitLayer(inner)) => {
+                op = op.layer(inner)
+            }
+            layers::Layer::Timeout(layers::TimeoutLayer(inner)) => op = op.layer(inner),
+            layers::Layer::Logging(layers::LoggingLayer(inner)) => op = op.layer(inner),
         }
     }
     op
 }
 
 #[ocaml::func]
-#[ocaml::sig("string -> (string * string) list -> (operator, string) Result.t ")]
+#[ocaml::sig(
+    "string -> (string * string) list -> Layers.layer array -> (operator, string) Result.t "
+)]
 pub fn operator(
     scheme_str: String,
     map: BTreeMap<String, String>,
@@ -54,7 +55,7 @@ pub fn operator(
 ) -> Result<ocaml::Pointer<Operator>, String> {
     let op = map_res_error(new_operator(scheme_str, map))?;
 
-    let op = add_layers(op, layers);
+    let op = add_layers(op,layers );
     Ok(Operator(op.blocking()).into())
 }
 

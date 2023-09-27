@@ -20,6 +20,7 @@
 val new_operator :
   string ->
   (string * string) list ->
+  Opendal_core.Layers.layer array ->
   (Opendal_core.Operator.operator, string) result
 (** [new_operator scheme config_map] Create a new block operator from given scheme and config_map.
     

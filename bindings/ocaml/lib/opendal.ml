@@ -18,5 +18,7 @@
 *)
 
 module Operator = Operator
+(* module Layer = Opendal_core.Layers *)
+module Layers = Layers
 
 type operator = Opendal_core.Operator.operator
