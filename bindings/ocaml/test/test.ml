@@ -26,7 +26,7 @@ let test_check_result = function
 
 let new_test_block_operator test_ctxt : operator =
   let cfgs = [ ("root", bracket_tmpdir test_ctxt) ] in
-  test_check_result (Operator.new_operator "fs" cfgs [||])
+  test_check_result (Operator.new_operator "fs" cfgs)
 
 let test_new_block_operator _ = ignore new_test_block_operator
 
@@ -82,27 +82,24 @@ let test_operator_stat test_ctxt =
   assert_equal 10L (Operator.Metadata.content_length metadata);
   ()
 
-let test_layer test_ctxt =
+let test_layers test_ctxt =
   let retry = Opendal.Layers.new_retry_layer None in
-  let idx = Opendal.Layers.new_immutable_index_layer [| |] in 
-  let cl = Opendal.Layers.new_concurrent_limit_layer 10 in 
-  let timeout = Opendal.Layers.new_timeout_layer (Core.Time.Span.of_ms 1000.) in 
-  (* let logger = Opendal.Layers.new_logging_layer 1. in  *)
+  let idx = Opendal.Layers.new_immutable_index_layer [| "foo" |] in
+  let cl = Opendal.Layers.new_concurrent_limit_layer 10 in
+  let timeout =
+    Opendal.Layers.new_timeout_layer (Some (Core.Time.Span.of_ms 1000.))
+  in
   let cfgs = [ ("root", bracket_tmpdir test_ctxt) ] in
-  print_endline "------6";
-  let bo = test_check_result (Operator.new_operator "fs" cfgs [|cl;idx; retry; timeout|]) in
-  (* let bo = test_check_result (Operator.new_operator "fs" cfgs) in *)
-  print_endline "------7";
+  let bo =
+    test_check_result
+      (Operator.new_operator ~layers:[| cl; idx; retry; timeout |] "fs" cfgs)
+  in
   ignore
     (test_check_result
        (Operator.write bo "tempfile" (Bytes.of_string "helloworld")));
-  print_endline "------8";
   let data = test_check_result (Operator.read bo "tempfile") in
-  print_endline "------9";
   assert_equal "helloworld"
-    (data |> Array.to_seq |> Bytes.of_seq |> Bytes.to_string);
-    print_endline "------10";
-    ()
+    (data |> Array.to_seq |> Bytes.of_seq |> Bytes.to_string)
 
 let suite =
   "suite"
@@ -113,7 +110,7 @@ let suite =
          "test_copy_and_read" >:: test_copy_and_read;
          "test_operator_reader" >:: test_operator_reader;
          "test_operator_stat" >:: test_operator_stat;
-         "test_layer" >:: test_layer;
+         "test_layers" >:: test_layers;
        ]
 
 let () = run_test_tt_main suite

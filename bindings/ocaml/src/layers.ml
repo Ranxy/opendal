@@ -8,16 +8,13 @@ type retry_layer
 type immutable_index_layer
 type concurrent_limit_layer
 type timeout_layer
-type logging_layer
 type layer = 
 | ConcurrentLimit of concurrent_limit_layer
 | ImmutableIndex of immutable_index_layer
 | Retry of retry_layer
 | Timeout of timeout_layer
-| Logging of logging_layer
 
 external new_retry_layer: int option -> float option -> bool -> float option -> float option -> layer  = "new_retry_layer"
 external new_immutable_index_layer: string array -> layer  = "new_immutable_index_layer"
 external new_concurrent_limit_layer: int -> layer  = "new_concurrent_limit_layer"
-external new_timeout_layer: float -> int64 option -> layer  = "new_timeout_layer"
-external new_logging_layer: float -> layer  = "new_logging_layer"
+external new_timeout_layer: float option -> int64 option -> layer  = "new_timeout_layer"
